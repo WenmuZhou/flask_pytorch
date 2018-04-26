@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo</title>
+{#    <script src="{{ url_for('static',filename='js/jquery-3.3.1.mini.js') }}"></script>#}
+{#    <script>#}
+{#        function ajaxForm() {#}
+{#            var form_data = new FormData(document.getElementById("form1"));#}
+{#            $.ajax({#}
+{#                type: 'POST',#}
+{#                url: 'http://127.0.0.1:5000/demo',#}
+{#                data: form_data,#}
+{#                dataType: 'json',//希望服务器返回json格式的数据#}
+{#                success: function (result) {#}
+{#                    alert(result);#}
+{#                },#}
+{#                error: function () {#}
+{#                    alert("异常！");#}
+{#                }#}
+{#            });#}
+{#        }#}
+{#    </script>#}
+</head>
+<body>
+    <h1>classification demo, the model is trained with mnist dataset</h1>
+    <form id="form1" method="post" enctype=multipart/form-data>
+        <input type=file id="img_id" name="img">
+        topk:<select name="topk">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+        </select>
+        <input type="submit">
+    </form>
+{#    <button type="button" onclick="ajaxForm()">识别</button>#}
+    {% if img_path %}
+        <img src="{{ img_path }}"/>
+    {% endif %}
+
+    {% if result %}
+        <table border="1">
+            <thead>
+                <tr>
+                  <th>类别</th>
+                  <th>概率</th>
+                </tr>
+            </thead>
+                {% for pred in result %}
+                    <tr>
+                        <td>{{ pred['label'] }}</td>
+                        <td>{{ pred['probability'] }}</td>
+                    </tr>
+                {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
