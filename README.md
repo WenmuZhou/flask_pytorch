@@ -20,7 +20,7 @@ you will see a result like this (I use the mnist image as example).
 
 ![image](img/result.jpg)
 
-the demo model can de download in [baiduyun](https://pan.baidu.com/s/1Y5zmNoo9ZGTfLmx5Plr83A)
+the demo model can de download in [baiduyun]https://pan.baidu.com/s/16O5eFaGoB9VZA7goBTNO4w)
 
 # demo online
 
