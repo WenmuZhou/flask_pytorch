@@ -24,15 +24,18 @@ def index():
 
 @app.route('/demo', methods=['POST', 'GET'])
 def upload():
-    if request.method == 'POST' and 'img' in request.files:
+    if request.method == 'POST':
         img = request.files['img'].filename
         topk = request.form['topk']
         img = secure_filename(img)
         new_name = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime()) + '_' + img
         filename = photos.save(request.files['img'], name=new_name)
-        data = predict_img(photos.path(filename), is_numpy=False,topk=int(topk))
-        result = data['predictions']
+        # data = predict_img(photos.path(filename), is_numpy=False,topk=int(topk))
+        result = list()
+        result.append({'label': 1, 'probability': ("%.4f" % 1.0000)})
+        print(result)
         img_path = photos.url(filename)
+        return flask.jsonify({"result":result,"img_path":img_path})
     else:
         img_path = None
         result = []
@@ -73,6 +76,6 @@ if __name__ == '__main__':
     print("Please wait until server has fully started")
     model_path = 'resnet18.pkl'
     gpu_id = None
-    model = Pytorch_model(model_path=model_path, img_shape=[
-        224, 224], img_channel=3, gpu_id=gpu_id)
+    # model = Pytorch_model(model_path=model_path, img_shape=[
+    #     224, 224], img_channel=3, gpu_id=gpu_id)
     app.run()

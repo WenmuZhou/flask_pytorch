@@ -3,28 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>demo</title>
-{#    <script src="{{ url_for('static',filename='js/jquery-3.3.1.mini.js') }}"></script>#}
-{#    <script>#}
-{#        function ajaxForm() {#}
-{#            var form_data = new FormData(document.getElementById("form1"));#}
-{#            $.ajax({#}
-{#                type: 'POST',#}
-{#                url: 'http://127.0.0.1:5000/demo',#}
-{#                data: form_data,#}
-{#                dataType: 'json',//希望服务器返回json格式的数据#}
-{#                success: function (result) {#}
-{#                    alert(result);#}
-{#                },#}
-{#                error: function () {#}
-{#                    alert("异常！");#}
-{#                }#}
-{#            });#}
-{#        }#}
-{#    </script>#}
+    <script src="{{ url_for('static',filename='js/jquery-3.3.1.js') }}"></script>
+    <script type=text/javascript>
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+    <script type=text/javascript>
+            function ajaxForm(){
+                var formData = new FormData(document.getElementById("form1"));//表单id
+                $.ajax({
+                    type: 'POST',
+                    url: $SCRIPT_ROOT + '/demo',
+                    data: formData,
+                    contentType:false,
+                    processData:false,
+                    dataType: 'json',//希望服务器返回json格式的数据
+                    success: function (data) {
+                        document.getElementById("result_div").style.display = "block";
+                        var tbody = window.document.getElementById("tbody_result");
+                        var result = data.result;
+                        <!--$("send_img").src=data.img_path-->
+                        for (i in result) {
+                            str += "<tr>" +
+                            "<td>" + result[i].label + "</td>" +
+                            "<td>" + result[i].probability + "</td>" +
+                            "</tr>";
+                            alert(str);
+                        }
+                        tbody.innerHTML = str;
+                    },
+                    error: function () {
+                        alert("异常！");
+                    }
+                });
+            };
+    </script>
 </head>
 <body>
     <h1>classification demo, the model is trained with mnist dataset</h1>
-    <form id="form1" method="post" enctype=multipart/form-data>
+    <form id="form1" onsubmit="return false"enctype="multipart/form-data">
         <input type=file id="img_id" name="img">
         topk:<select name="topk">
             <option value="1">1</option>
@@ -32,28 +48,20 @@
             <option value="3">3</option>
             <option value="5">5</option>
         </select>
-        <input type="submit">
+        <button type="button" onclick="ajaxForm()">识别</button>
     </form>
-{#    <button type="button" onclick="ajaxForm()">识别</button>#}
-    {% if img_path %}
-        <img src="{{ img_path }}"/>
-    {% endif %}
-
-    {% if result %}
-        <table border="1">
+    <div id="result_div" style ="display: none;">
+        <img id="send_img" src="{{ img_path }}"/>
+        <table id="generatedTable" style ="border=2;">
             <thead>
                 <tr>
-                  <th>类别</th>
-                  <th>概率</th>
+                    <th>标签</th>
+                    <th>概率</th>
                 </tr>
             </thead>
-                {% for pred in result %}
-                    <tr>
-                        <td>{{ pred['label'] }}</td>
-                        <td>{{ pred['probability'] }}</td>
-                    </tr>
-                {% endfor %}
-        </table>
-    {% endif %}
+            <tbody id="tbody_result">
+             </tbody>
+         </table>
+    </div>
 </body>
 </html>
