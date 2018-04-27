@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>demo</title>
     <script src="{{ url_for('static',filename='js/jquery-3.3.1.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/vue.js') }}"></script>
+    <script>
+        new Vue()
+    </script>
     <script type=text/javascript>
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
@@ -18,27 +22,21 @@
                     processData:false,
                     dataType: 'json',//希望服务器返回json格式的数据
                     success: function (data) {
-                        document.getElementById("result_div").style.display = "block";
-                        var tbody = window.document.getElementById("tbody_result");
-                        var result = data.result;
-                        <!--$("send_img").src=data.img_path-->
-                        for (i in result) {
-                            str += "<tr>" +
-                            "<td>" + result[i].label + "</td>" +
-                            "<td>" + result[i].probability + "</td>" +
-                            "</tr>";
-                            alert(str);
+                        if (data.result!=null) {
+                            result_1.predictions = data.result.predictions;
+                            result_1.img_path = data.img_path;
                         }
-                        tbody.innerHTML = str;
+                        <!--$("send_img").src=data.img_path-->
                     },
                     error: function () {
                         alert("异常！");
                     }
                 });
-            };
+            }
     </script>
 </head>
 <body>
+
     <h1>classification demo, the model is trained with mnist dataset</h1>
     <form id="form1" onsubmit="return false"enctype="multipart/form-data">
         <input type=file id="img_id" name="img">
@@ -50,18 +48,43 @@
         </select>
         <button type="button" onclick="ajaxForm()">识别</button>
     </form>
-    <div id="result_div" style ="display: none;">
-        <img id="send_img" src="{{ img_path }}"/>
-        <table id="generatedTable" style ="border=2;">
+
+
+    <div id="app" v-show="change_status">
+        <img id="send_img" :src="img_path" />
+        <table id="generatedTable"  >
             <thead>
                 <tr>
+                    <th>排名</th>
                     <th>标签</th>
                     <th>概率</th>
                 </tr>
             </thead>
-            <tbody id="tbody_result">
+            <tbody >
+                <tr v-for="(item,index) in predictions">
+                    <td >[[ index ]]</td>
+                    <td >[[ item.label ]]</td>
+                    <td>[[ item.probability ]]</td>
+                </tr>
              </tbody>
          </table>
     </div>
+    <script>
+        var result_1 = new Vue({
+            el:"#app",
+            data:{
+                predictions:null,
+                img_path:null,
+            },
+            delimiters: ['[[',']]'],
+            computed:{
+                change_status: function () {
+                    console.log(this.predictions);
+                    console.log(this.predictions != null);
+                    return this.predictions != null
+                }
+            }
+        })
+    </script>
 </body>
 </html>
